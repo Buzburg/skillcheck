@@ -2,9 +2,8 @@
 
 > **Lighthouse & Security Auditor for AI Agent Skills & Prompts**
 
-[![CI](https://github.com/buzburgai-arch/skillcheck/actions/workflows/ci.yml/badge.svg)](https://github.com/buzburgai-arch/skillcheck/actions)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20or%20Apache--2.0-blue.svg)](LICENSE)
-[![SkillScore](https://img.shields.io/badge/SkillScore-100/100_A+_brightgreen.svg)](https://github.com/buzburgai-arch/skillcheck)
+[![CI](https://github.com/Buzburg/skillcheck/actions/workflows/ci.yml/badge.svg)](https://github.com/Buzburg/skillcheck/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 `skillcheck` is a blazingly fast Rust linter and security scanner for `SKILL.md` files and AI agent prompt manifests. It audits instruction files across 4 vectors: **Structure**, **Prompt Injection & Shell Safety**, **Token Bloat & Cost Efficiency**, and **Instruction Consistency**—providing actionable diagnostics, automated token pruning (`--fix`), and a verifiable README badge.
 
@@ -40,7 +39,9 @@
 ### Installation
 
 ```bash
-cargo install skillcheck
+git clone https://github.com/Buzburg/skillcheck.git
+cd skillcheck
+cargo install --path . --locked
 ```
 
 ### Usage
@@ -71,4 +72,4 @@ cargo test
 
 ## 📄 License
 
-Dual-licensed under [MIT](LICENSE) or [Apache-2.0](LICENSE).
+Licensed under [MIT](LICENSE).

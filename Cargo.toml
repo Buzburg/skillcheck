@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Buzburg AI <dev@buzburg.ai>"]
 description = "Lighthouse and security auditor for AI agent skills and prompt manifests."
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/buzburgai-arch/skillcheck"
+license = "MIT"
+repository = "https://github.com/Buzburg/skillcheck"
 keywords = ["ai-agents", "linter", "security", "skills", "audit"]
 categories = ["command-line-utilities", "development-tools"]
 
