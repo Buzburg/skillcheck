@@ -16,8 +16,8 @@ use parser::SkillParser;
 
 #[derive(Parser)]
 #[command(name = "skillcheck")]
-#[command(about = "Lighthouse and security auditor for AI agent skills and prompt manifests.")]
-#[command(version = "0.1.0")]
+#[command(about = "Quality linter for AI agent skills and prompt manifests.")]
+#[command(version = "0.1.1")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -25,9 +25,9 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Audit a SKILL.md file or directory containing skills
+    /// Audit a SKILL.md file
     Scan {
-        /// Target path to SKILL.md or folder
+        /// Target path to SKILL.md
         #[arg(default_value = "SKILL.md")]
         path: PathBuf,
     },
@@ -77,7 +77,7 @@ fn main() {
             let report = auditor.audit(&parsed);
 
             println!("{}", "╔═════════════════════════════════════════════════════════════════╗".cyan());
-            println!("{}", "║      skillcheck v0.1.0 — Agent Skill & Prompt Quality Audit     ║".cyan().bold());
+            println!("{}", "║      skillcheck v0.1.1 — Agent Skill & Prompt Quality Audit     ║".cyan().bold());
             println!("{}", "╚═════════════════════════════════════════════════════════════════╝".cyan());
             println!(" File: {}", path.display().to_string().bold());
             println!(" Estimated Tokens: {}", report.token_count.to_string().yellow());
@@ -85,7 +85,7 @@ fn main() {
             println!();
 
             if report.findings.is_empty() {
-                println!("{}", "  ✔ All quality & security checks passed!".green().bold());
+                println!("{}", "  ✔ No findings from the configured heuristic checks.".green().bold());
             } else {
                 println!(" Findings ({}):", report.findings.len());
                 for f in &report.findings {
@@ -121,7 +121,10 @@ fn main() {
                 process::exit(1);
             }
 
-            let content = fs::read_to_string(&path).unwrap_or_default();
+            let content = fs::read_to_string(&path).unwrap_or_else(|error| {
+                eprintln!("Error reading '{}': {}", path.display(), error);
+                process::exit(1);
+            });
             let optimizer = SkillOptimizer::new();
             let (optimized, saved_words) = optimizer.optimize(&content);
 
@@ -131,7 +134,10 @@ fn main() {
             );
 
             if write {
-                fs::write(&path, &optimized).unwrap();
+                fs::write(&path, &optimized).unwrap_or_else(|error| {
+                    eprintln!("Error writing '{}': {}", path.display(), error);
+                    process::exit(1);
+                });
                 println!("✔ Wrote optimized content in-place to '{}'", path.display());
             } else {
                 println!("\nPreview of changes (pass --write to apply):\n");
@@ -140,14 +146,17 @@ fn main() {
         }
 
         Commands::Badge { path } => {
-            let content = fs::read_to_string(&path).unwrap_or_default();
+            let content = fs::read_to_string(&path).unwrap_or_else(|error| {
+                eprintln!("Error reading '{}': {}", path.display(), error);
+                process::exit(1);
+            });
             let parsed = SkillParser::parse(&content);
             let report = auditor.audit(&parsed);
             println!("{}", BadgeGenerator::markdown_badge(report.total_score, report.letter_grade));
         }
 
         Commands::Version => {
-            println!("skillcheck v0.1.0 (Lighthouse for AI Agent Skills)");
+            println!("skillcheck v0.1.1 (Lighthouse for AI Agent Skills)");
         }
     }
 }

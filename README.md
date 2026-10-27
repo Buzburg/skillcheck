@@ -1,75 +1,42 @@
-# skillcheck 🛡️
+# Skillcheck 🛡️
 
-> **Lighthouse & Security Auditor for AI Agent Skills & Prompts**
+**Give your agent skills a checkup.**
 
-[![CI](https://github.com/Buzburg/skillcheck/actions/workflows/ci.yml/badge.svg)](https://github.com/Buzburg/skillcheck/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+Turn a `SKILL.md` file into a readable report: missing metadata, common risky shell patterns, repeated filler, and a small set of contradictory instructions. Get a score and a Markdown badge you can share.
 
-`skillcheck` is a blazingly fast Rust linter and security scanner for `SKILL.md` files and AI agent prompt manifests. It audits instruction files across 4 vectors: **Structure**, **Prompt Injection & Shell Safety**, **Token Bloat & Cost Efficiency**, and **Instruction Consistency**—providing actionable diagnostics, automated token pruning (`--fix`), and a verifiable README badge.
+## Try it
 
-```
- ┌─────────────────────────────────────────────────────────────┐
- │ skillcheck v0.1.0 ── Auditing: skills/deploy-k8s/SKILL.md    │
- ├─────────────────────────────────────────────────────────────┤
- │  [PASS] Structure & YAML Frontmatter           100/100      │
- │  [WARN] Token Density & Conciseness             72/100      │
- │         - 840 superfluous conversational tokens detected    │
- │  [PASS] Path & Binary Safety                   100/100      │
- │  [FAIL] Indirect Prompt Injection Resilience   44/100       │
- │         - Unsanitized grep argument allows command escape   │
- ├─────────────────────────────────────────────────────────────┤
- │  OVERALL SKILL SCORE: 79/100 [GRADE: C+]                    │
- │  Markdown Badge: [![SkillScore 79](https://...)]            │
- └─────────────────────────────────────────────────────────────┘
-```
+Requires a current stable Rust toolchain:
 
----
-
-## ⚡ Why skillcheck?
-
-- **Audit Security in Sub-10ms:** Detects path traversal, unquoted bash variables, and risky parameter expansions.
-- **Save Wasted Tokens:** Identifies conversational fluff ("Please ensure that you kindly...") that inflates context windows across thousands of agent steps.
-- **Automated `--fix` Compression:** Prunes boilerplate phrases without altering core instructions, reducing token counts by ~30%.
-- **The Badge Flywheel:** Generates dynamic GitHub shields badges for skill authors to showcase quality in their READMEs.
-
----
-
-## 🚀 Quickstart
-
-### Installation
-
-```bash
+```sh
 git clone https://github.com/Buzburg/skillcheck.git
 cd skillcheck
 cargo install --path . --locked
+skillcheck scan /path/to/SKILL.md
+skillcheck fix /path/to/SKILL.md
+skillcheck badge /path/to/SKILL.md
 ```
 
-### Usage
+`fix` prints a preview. Review it, then use `skillcheck fix /path/to/SKILL.md --write` to replace the file. The optimizer removes literal filler phrases; it does not understand intent and may affect quoted examples. Keep your file in version control.
 
-```bash
-# 1. Audit your SKILL.md
-skillcheck scan SKILL.md
+## A report you can act on
 
-# 2. Preview token compression
-skillcheck fix SKILL.md
+| Check | What it looks for |
+| --- | --- |
+| Structure | YAML frontmatter, name and description |
+| Risk patterns | Selected traversal sequences and shell-variable patterns |
+| Efficiency | Known filler phrases and estimated document size |
+| Consistency | Selected conflicting directives |
 
-# 3. Apply fixes in place
-skillcheck fix SKILL.md --write
+The score summarizes these rules. It is **not a security certification**, prompt-injection defense, or proof that a skill is safe. Token counts are word-based estimates; cost output uses a fixed illustrative rate, not your provider's billing.
 
-# 4. Generate README badge
-skillcheck badge SKILL.md
+`scan` exits 1 for a score below 70 or an input error. `badge` produces a static score badge; run it again when the skill changes. Each command accepts one file.
+
+## Verify
+
+```sh
+cargo test --locked
+cargo build --release --locked
 ```
 
----
-
-## 🧪 Testing
-
-```bash
-cargo test
-```
-
----
-
-## 📄 License
-
-Licensed under [MIT](LICENSE).
+Developer beta. See [release verification](RELEASE_VERIFICATION.md). MIT licensed. Built by Buzburg.
